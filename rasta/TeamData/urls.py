@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import PeopleList
+from .views import peopleList
 app_name='TeamData'
 urlpatterns = [
-    path('people/',PeopleList.as_view(),name='PeopleList')
+    path('people/',peopleList,name='PeopleList')
 ]
