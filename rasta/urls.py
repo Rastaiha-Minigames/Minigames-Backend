@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('frequency/', include('frequencyWorkshop.urls')),
+    path('image/', include('imageWorkshop.urls')),
     path('',include('TeamData.urls'))
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

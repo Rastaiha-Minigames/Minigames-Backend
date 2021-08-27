@@ -31,6 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 INSTALLED_APPS = [
     'TeamData.apps.TeamdataConfig',
     'frequencyWorkshop.apps.FrequencyworkshopConfig',
+    'imageWorkshop.apps.ImageworkshopConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
