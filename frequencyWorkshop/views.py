@@ -129,8 +129,8 @@ def soundFilter(request):
 
 
     sound_name = ''.join(random.choice(string.ascii_letters) for i in range(7))
-    sound_dir = OUTPUT_SOUNDS_DIR + sound_name + '.mp3'
-    wav.write(sound_dir, samplerate, filtered_data)
+    sound_dir = OUTPUT_SOUNDS_DIR + sound_name + '.wav'
+    wav.write(sound_dir, samplerate, filtered_data.astype(np.float32))
 
     return Response({'fft_dir': BASE_DIR + fft_dir,
                      'filtered_fft_dir': BASE_DIR + filtered_fft_dir,
