@@ -99,7 +99,7 @@ def soundFilter(request):
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
-    plt.title("Frequency Domain")
+    plt.title("Frequency Domain (original sound)")
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
 
@@ -114,7 +114,7 @@ def soundFilter(request):
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
-    plt.title("Frequency Domain")
+    plt.title("Frequency Domain (filtered sound)")
     filtered_fft_dir = FFT_DIR + 'ffft' + name + '.png'
     plt.savefig(filtered_fft_dir)
 
@@ -123,13 +123,13 @@ def soundFilter(request):
     x_range = [k / samplerate for k in range(0, samples_num)]
     ax.plot(x_range, filtered_data)
     plt.xlabel("Time(s)")
-    plt.title("Time Domain")
+    plt.title("Time Domain (filtered sound)")
     time_dir = FFT_DIR + 'time' + name + '.png'
     plt.savefig(time_dir)
 
 
     sound_name = ''.join(random.choice(string.ascii_letters) for i in range(7))
-    sound_dir = OUTPUT_SOUNDS_DIR + sound_name + '.wav'
+    sound_dir = OUTPUT_SOUNDS_DIR + sound_name + '.mp3'
     wav.write(sound_dir, samplerate, filtered_data.astype(np.float32))
 
     return Response({'fft_dir': BASE_DIR + fft_dir,
