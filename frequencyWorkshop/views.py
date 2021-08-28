@@ -10,8 +10,9 @@ from rest_framework.exceptions import ParseError
 import matplotlib.pyplot as plt
 import librosa as librosa
 
-from scipy.fftpack import fft
+from scipy.fftpack import fft, fftshift
 import numpy as np
+from scipy.io import wavfile
 
 from .utils import *
 
@@ -36,23 +37,24 @@ def fftView(request):
         duration = None
 
     file = INPUT_SOUNDS_DIR + request.data['sound_file']
+    data, samplerate = librosa.load(file, offset=start, duration=duration, sr=None)
 
-    data, rate = librosa.load(file, offset=start, duration=duration)
-    samples_num = len(data)
+    N = len(data)
+    T = 1.0 / samplerate
+    yf = fft(data)
+    xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
 
-    fft_out = fft(data)
-    plt.clf()
-    x_range = [k * rate / samples_num for k in range(0, (samples_num // 2))]
-    plt.plot(x_range, np.abs(fft_out[-1*(samples_num // 2):]))
+    fig, ax = plt.subplots()
+    ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
+    plt.xlabel("Frequency(Hz)")
+    plt.title("Frequency Domain")
+    # plt.show()
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
     fft_dir = FFT_DIR + name + '.png'
     plt.savefig(FFT_DIR + name+'.png')
 
-    # f = open('media/' + name+'.png', 'w')
-    # plot_file = File(f)
-    # output = FFTFiles.objects.create(fft_file=plot_file)
     return Response({'fft_dir': BASE_DIR + fft_dir})
 
 
@@ -81,39 +83,54 @@ def soundFilter(request):
     else:
         highcut = 3000 #TODO change to the end of sound
 
-    data, rate = librosa.load(file_name, offset=start, duration=duration)
+    data, samplerate = librosa.load(file_name, offset=start, duration=duration, sr=None)
+    # data, rate = librosa.load(file_name, offset=start, duration=duration, sr=None)
     samples_num = len(data)
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
 
+    N = len(data)
+    T = 1.0 / samplerate
+    yf = fft(data)
+    xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
+
     plt.clf()
-    x = fft(data)
-    x_range = [k * rate / samples_num for k in range(0, (samples_num // 2))]
-    plt.plot(x_range, np.abs(x[-1*(samples_num // 2):])/samples_num, label='Noisy signal')
+    fig, ax = plt.subplots()
+    ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
+    plt.xlabel("Frequency(Hz)")
+    plt.title("Frequency Domain")
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
 
-    y = butter_bandpass_filter(data, lowcut, highcut, 6000, order=9)
-    fft_out = fft(y)
+    filtered_data = butter_bandpass_filter(data, lowcut, highcut, 6000, order=9)
+
+    N = len(filtered_data)
+    T = 1.0 / samplerate
+    yf = fft(filtered_data)
+    xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
+
     plt.clf()
-    plt.plot(x_range, np.abs(fft_out[-1 * (samples_num // 2):])/samples_num, label='Filtered signal')
+    fig, ax = plt.subplots()
+    ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
+    plt.xlabel("Frequency(Hz)")
+    plt.title("Frequency Domain")
     filtered_fft_dir = FFT_DIR + 'ffft' + name + '.png'
     plt.savefig(filtered_fft_dir)
 
     plt.clf()
-    x_range = [k / rate for k in range(0, samples_num)]
-    plt.plot(x_range, y)
+    fig, ax = plt.subplots()
+    x_range = [k / samplerate for k in range(0, samples_num)]
+    ax.plot(x_range, filtered_data)
+    plt.xlabel("Time(s)")
+    plt.title("Time Domain")
     time_dir = FFT_DIR + 'time' + name + '.png'
     plt.savefig(time_dir)
 
-    # plt.grid(True)
-    # plt.legend(loc='upper left')
-
 
     sound_name = ''.join(random.choice(string.ascii_letters) for i in range(7))
-    sound_dir = OUTPUT_SOUNDS_DIR + sound_name + '.wav'
-    wav.write(sound_dir, rate, y)
+    sound_dir = OUTPUT_SOUNDS_DIR + sound_name + '.mp3'
+    wav.write(sound_dir, samplerate, filtered_data)
 
     return Response({'fft_dir': BASE_DIR + fft_dir,
                      'filtered_fft_dir': BASE_DIR + filtered_fft_dir,
@@ -137,11 +154,15 @@ def timeView(request):
 
     file = INPUT_SOUNDS_DIR + request.data['sound_file']
 
-    data, rate = librosa.load(file, offset=start, duration=duration)
+    data, rate = librosa.load(file, offset=start, duration=duration, sr=None)
     samples_num = len(data)
-    plt.clf()
     x_range = [k/rate for k in range(0, samples_num)]
-    plt.plot(x_range, data)
+
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.plot(x_range, data)
+    plt.xlabel("Time(s)")
+    plt.title("Time Domain")
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
