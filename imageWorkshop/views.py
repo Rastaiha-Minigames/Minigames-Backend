@@ -57,10 +57,17 @@ def filter_im(request):
     if 'kernel' not in request.data:
         raise ParseError("Empty content")
     # res = json.loads(stringA)
-    kernel = np.array(json.loads(request.data['kernel']))
+    if request.data['kernel'] == 'gaussian':
+        im = cv2.imread(file_dir)
+        filtered_im = cv2.GaussianBlur(im, (31, 31), 0)
 
-    im = cv2.imread(file_dir)
-    filtered_im = cv2.filter2D(im, -1, kernel)
+    else:
+        if type(request.data['kernel']) == list:
+            kernel = np.array(request.data['kernel'])
+        else:
+            kernel = np.array(json.loads(request.data['kernel']))
+        im = cv2.imread(file_dir)
+        filtered_im = cv2.filter2D(im, -1, kernel)
 
     t = str(datetime.now().strftime('%H:%M-%S'))
 
