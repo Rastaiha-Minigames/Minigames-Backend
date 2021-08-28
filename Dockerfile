@@ -10,6 +10,7 @@ ENV PYTHONUNBUFFERED 1
 
 # soundfile
 RUN apt update -y && apt install libsndfile1 gcc -y
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
 # install dependencies
 RUN pip install --upgrade pip setuptools
@@ -29,6 +30,7 @@ COPY ./entrypoint.prod.sh ./entrypoint.prod.sh
 ADD ["./rasta", "./rasta"]
 ADD ["./TeamData", "./TeamData"]
 ADD ["./frequencyWorkshop", "./frequencyWorkshop"]
+ADD ["./imageWorkshop", "./imageWorkshop"]
 ADD ["./media", "./media"]
 
 COPY ./manage.py ./manage.py
