@@ -146,18 +146,10 @@ def soundFilter(request):
 def timeView(request):
     if 'sound_file' not in request.data:
         raise ParseError("Empty content")
-    if 'start' in request.data:
-        start = float(request.data['start'])
-    else:
-        start = 0.0
-    if 'end' in request.data:
-        duration = float(request.data['end'])-start
-    else:
-        duration = None
 
     file = INPUT_SOUNDS_DIR + request.data['sound_file']
 
-    data, rate = librosa.load(file, offset=start, duration=duration, sr=None)
+    data, rate = librosa.load(file, sr=None)
     samples_num = len(data)
     x_range = [k/rate for k in range(0, samples_num)]
 
@@ -169,7 +161,21 @@ def timeView(request):
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
-    fft_dir = FFT_DIR + name + '.png'
-    plt.savefig(FFT_DIR + name+'.png')
+    time_dir = FFT_DIR + 'time' + name + '.png'
+    plt.savefig(time_dir)
 
-    return Response({'time_dir': BASE_DIR + fft_dir})
+    N = len(data)
+    T = 1.0 / rate
+    yf = fft(data)
+    xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
+
+    fig, ax = plt.subplots()
+    ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
+    plt.xlabel("Frequency(Hz)")
+    plt.title("Frequency Domain")
+    fft_dir = FFT_DIR + 'fft' + name + '.png'
+    plt.savefig(fft_dir)
+
+    return Response({'time_dir': BASE_DIR + time_dir,
+                     'fft_dir': BASE_DIR + fft_dir,
+                     'f_domain': rate//2})
