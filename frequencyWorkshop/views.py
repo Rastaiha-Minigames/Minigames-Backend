@@ -47,6 +47,7 @@ def fftView(request):
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
+    plt.xlim(0, 2000)
     plt.title("Frequency Domain")
     # plt.show()
 
@@ -86,6 +87,7 @@ def soundFilter(request):
     data, samplerate = librosa.load(file_name, offset=start, duration=duration, sr=None)
     # data, rate = librosa.load(file_name, offset=start, duration=duration, sr=None)
     samples_num = len(data)
+    filtered_data = butter_bandpass_filter(data, lowcut, highcut, 6000, order=9)
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
@@ -99,11 +101,11 @@ def soundFilter(request):
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
+    plt.xlim(0, 2000)
     plt.title("Frequency Domain (original sound)")
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
 
-    filtered_data = butter_bandpass_filter(data, lowcut, highcut, 6000, order=9)
 
     N = len(filtered_data)
     T = 1.0 / samplerate
@@ -114,6 +116,7 @@ def soundFilter(request):
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
+    plt.xlim(0, 2000)
     plt.title("Frequency Domain (filtered sound)")
     filtered_fft_dir = FFT_DIR + 'ffft' + name + '.png'
     plt.savefig(filtered_fft_dir)
