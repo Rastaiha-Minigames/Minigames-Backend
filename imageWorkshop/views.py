@@ -35,14 +35,16 @@ def threshold(request):
     tr = int(request.data['threshold'])
 
     im = cv2.imread(file_dir, 0)
+    print(im[0])
     im[im < tr] = 0
     im[im >= tr] = 255
+    print(im[0])
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
     image_dir = OUTPUT_IMAGE_DIR + name + '.png'
     plt.clf()
-    plt.imsave(arr=im, fname= image_dir, cmap='gray')
+    plt.imsave(arr=im, fname= image_dir, cmap='gray', vmin=0, vmax=255)
 
     return Response({'image_dir': BASE_DIR + image_dir})
 
