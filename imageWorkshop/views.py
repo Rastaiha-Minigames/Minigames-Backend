@@ -44,8 +44,9 @@ def threshold(request):
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
     image_dir = OUTPUT_IMAGE_DIR + name + '.png'
     plt.clf()
+    fig = plt.figure()
     plt.imsave(arr=im, fname= image_dir, cmap='gray', vmin=0, vmax=255)
-
+    plt.close(fig)
     return Response({'image_dir': BASE_DIR + image_dir})
 
 
@@ -106,11 +107,11 @@ def channels(request):
 
     # write channels to greyscale image
     plt.clf()
-    plt.imsave(arr=blue_channel, fname=blue_image_dir, cmap='gray')
+    plt.imsave(arr=blue_channel, fname=blue_image_dir, cmap='gray', vmin=0, vmax=255)
     plt.clf()
-    plt.imsave(arr=green_channel, fname=green_image_dir, cmap='gray')
+    plt.imsave(arr=green_channel, fname=green_image_dir, cmap='gray', vmin=0, vmax=255)
     plt.clf()
-    plt.imsave(arr=red_channel, fname=red_image_dir, cmap='gray')
+    plt.imsave(arr=red_channel, fname=red_image_dir, cmap='gray', vmin=0, vmax=255)
 
     return Response({'blue_image_dir': BASE_DIR + blue_image_dir,
                      'green_image_dir': BASE_DIR + green_image_dir,
