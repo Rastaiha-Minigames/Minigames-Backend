@@ -79,7 +79,7 @@ def soundFilter(request):
     # data, rate = librosa.load(file_name, offset=start, duration=duration, sr=None)
     samples_num = len(data)
 
-    filtered_data, data_filtered_f = ideal_bandpass_filter(data, samplerate, 1000, 2000)
+    filtered_data, data_filtered_f = ideal_bandpass_filter(data, samplerate, lowcut, highcut)
     # wavfile.write('Noisy_filtered.wav', fs, data_filtered.astype(np.float32))
 
     t = str(datetime.now().strftime('%H:%M-%S'))
@@ -96,6 +96,8 @@ def soundFilter(request):
     plt.xlabel("Frequency(Hz)")
     # plt.xlim(0, 2000)
     plt.title("Frequency Domain (original sound)")
+    if file_name == INPUT_SOUNDS_DIR + 'kotlet_kargah_2.wav':
+        plt.ylim(0,0.02)
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
 
@@ -106,11 +108,13 @@ def soundFilter(request):
     xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
 
     plt.clf()
-    fig, ax = plt.subplots()
-    ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
+    xff = np.linspace(-samplerate / 2, samplerate / 2, N)
+    plt.plot(xff, 2.0 / N * abs(yf))
     plt.xlabel("Frequency(Hz)")
-    # plt.xlim(0, 2000)
     plt.title("Frequency Domain (filtered sound)")
+    plt.xlim(0, samplerate / 2)
+
+
     filtered_fft_dir = FFT_DIR + 'ffft' + name + '.png'
     plt.savefig(filtered_fft_dir)
 
@@ -166,6 +170,8 @@ def timeView(request):
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
     plt.title("Frequency Domain")
+    if file == INPUT_SOUNDS_DIR + 'kotlet_kargah_2.wav':
+        plt.ylim(0,0.02)
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
 
