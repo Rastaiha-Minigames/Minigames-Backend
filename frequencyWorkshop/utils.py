@@ -1,20 +1,47 @@
 import librosa as librosa
 from scipy.io import wavfile as wav
-from scipy.signal import butter, lfilter
+# from scipy.signal import butter, lfilter
+import scipy
+import numpy as np
 
 
-def butter_bandpass(lowcut, highcut, fs, order=5):
-    nyq = 0.5 * fs
-    low = lowcut / nyq
-    high = highcut / nyq
-    b, a = butter(order, [low, high], btype='band')
-    return b, a
+# def butter_bandpass(lowcut, highcut, fs, order=5):
+#     nyq = 0.5 * fs
+#     low = lowcut / nyq
+#     high = highcut / nyq
+#     b, a = butter(order, [low, high], btype='band')
+#     return b, a
+#
+#
+# def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+#     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+#     y = lfilter(b, a, data)
+#     return y
+#
 
+def ideal_bandpass_filter(data, fs, lowcut, highcut):
+    N = len(data)
+    T = 1.0 / fs
+    data_f = scipy.fftpack.fftshift(scipy.fftpack.fft(data))
+    xf = np.linspace(-fs / 2, fs / 2, N)
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
-    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
+    #     plt.plot(xf,abs(data_f))
+    #     plt.xlabel("Frequency(Hz)")
+    #     plt.title("Frequency Domain")
+
+    bandpass_filter = np.zeros(N)
+    for i in range(N):
+        if (-highcut < xf[i] < -lowcut or lowcut < xf[i] < highcut):
+            bandpass_filter[i] = 1
+
+    # matplotlib.figure.Figure
+    data_filtered_f = np.multiply(bandpass_filter, data_f)
+    #     plt.plot(xf,abs(data_filtered_f))
+    #     plt.xlabel("Frequency(Hz)")
+    #     plt.title("Frequency Domain")
+
+    data_filtered = np.real(scipy.fftpack.ifft(scipy.fftpack.ifftshift(data_filtered_f)))
+    return data_filtered, data_filtered_f
 
 #
 # def run():

@@ -66,15 +66,6 @@ def soundFilter(request):
         raise ParseError("Empty content")
     file_name = INPUT_SOUNDS_DIR + request.data['sound_file']
 
-    if 'start' in request.data:
-        start = float(request.data['start'])
-    else:
-        start = 0.0
-    if 'end' in request.data:
-        duration = float(request.data['end'])-start
-    else:
-        duration = None
-
     if 'lowcut' in request.data:
         lowcut = float(request.data['lowcut'])
     else:
@@ -84,10 +75,12 @@ def soundFilter(request):
     else:
         highcut = 3000 #TODO change to the end of sound
 
-    data, samplerate = librosa.load(file_name, offset=start, duration=duration, sr=None)
+    data, samplerate = librosa.load(file_name, sr=None)
     # data, rate = librosa.load(file_name, offset=start, duration=duration, sr=None)
     samples_num = len(data)
-    filtered_data = butter_bandpass_filter(data, lowcut, highcut, 6000, order=9)
+
+    filtered_data, data_filtered_f = ideal_bandpass_filter(data, samplerate, 1000, 2000)
+    # wavfile.write('Noisy_filtered.wav', fs, data_filtered.astype(np.float32))
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
@@ -101,7 +94,7 @@ def soundFilter(request):
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
-    plt.xlim(0, 2000)
+    # plt.xlim(0, 2000)
     plt.title("Frequency Domain (original sound)")
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
@@ -109,14 +102,14 @@ def soundFilter(request):
 
     N = len(filtered_data)
     T = 1.0 / samplerate
-    yf = fft(filtered_data)
+    yf = data_filtered_f
     xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
 
     plt.clf()
     fig, ax = plt.subplots()
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
-    plt.xlim(0, 2000)
+    # plt.xlim(0, 2000)
     plt.title("Frequency Domain (filtered sound)")
     filtered_fft_dir = FFT_DIR + 'ffft' + name + '.png'
     plt.savefig(filtered_fft_dir)
