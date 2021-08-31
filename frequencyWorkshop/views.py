@@ -55,6 +55,7 @@ def fftView(request):
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
     fft_dir = FFT_DIR + name + '.png'
     plt.savefig(FFT_DIR + name+'.png')
+    plt.close(fig)
 
     return Response({'fft_dir': BASE_DIR + fft_dir})
 
@@ -98,8 +99,13 @@ def soundFilter(request):
     plt.title("Frequency Domain (original sound)")
     if file_name == INPUT_SOUNDS_DIR + 'kotlet_kargah_2.wav':
         plt.ylim(0,0.02)
+
+    if file_name == INPUT_SOUNDS_DIR + 'Noisy.wav':
+        plt.ylim(0,0.3)
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
+    plt.close(fig)
+
 
 
     N = len(filtered_data)
@@ -112,11 +118,14 @@ def soundFilter(request):
     plt.plot(xff, 2.0 / N * abs(yf))
     plt.xlabel("Frequency(Hz)")
     plt.title("Frequency Domain (filtered sound)")
+    if file_name == INPUT_SOUNDS_DIR + 'Noisy.wav':
+        plt.ylim(0,0.3)
     plt.xlim(0, samplerate / 2)
 
 
     filtered_fft_dir = FFT_DIR + 'ffft' + name + '.png'
     plt.savefig(filtered_fft_dir)
+    plt.close(fig)
 
     plt.clf()
     fig, ax = plt.subplots()
@@ -124,8 +133,11 @@ def soundFilter(request):
     ax.plot(x_range, filtered_data)
     plt.xlabel("Time(s)")
     plt.title("Time Domain (filtered sound)")
+    if file_name == INPUT_SOUNDS_DIR + 'Noisy.wav':
+        plt.xlim(0,0.03)
     time_dir = FFT_DIR + 'time' + name + '.png'
     plt.savefig(time_dir)
+    plt.close(fig)
 
 
     sound_name = ''.join(random.choice(string.ascii_letters) for i in range(7))
@@ -155,11 +167,14 @@ def timeView(request):
     ax.plot(x_range, data)
     plt.xlabel("Time(s)")
     plt.title("Time Domain")
+    if file == INPUT_SOUNDS_DIR + 'Noisy.wav':
+        plt.xlim(0, 0.03)
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
     time_dir = FFT_DIR + 'time' + name + '.png'
     plt.savefig(time_dir)
+    plt.close(fig)
 
     N = len(data)
     T = 1.0 / rate
@@ -170,10 +185,13 @@ def timeView(request):
     ax.plot(xf, 2.0 / N * np.abs(yf[:N // 2]))
     plt.xlabel("Frequency(Hz)")
     plt.title("Frequency Domain")
+    if file == INPUT_SOUNDS_DIR + 'Noisy.wav':
+        plt.ylim(0,0.3)
     if file == INPUT_SOUNDS_DIR + 'kotlet_kargah_2.wav':
         plt.ylim(0,0.02)
     fft_dir = FFT_DIR + 'fft' + name + '.png'
     plt.savefig(fft_dir)
+    plt.close(fig)
 
     return Response({'time_dir': BASE_DIR + time_dir,
                      'fft_dir': BASE_DIR + fft_dir,

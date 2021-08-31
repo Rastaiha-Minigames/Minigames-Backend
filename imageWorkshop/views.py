@@ -76,8 +76,11 @@ def filter_im(request):
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
     image_dir = OUTPUT_IMAGE_DIR + name + '.png'
     plt.clf()
-    plt.figure(figsize=(20, 10))
+    fig = plt.figure(figsize=(20, 10))
     plt.imsave(arr=filtered_im, fname=image_dir)
+    plt.close(fig)
+
+
 
     return Response({'image_dir': BASE_DIR + image_dir})
 
@@ -107,11 +110,17 @@ def channels(request):
 
     # write channels to greyscale image
     plt.clf()
+    fig = plt.figure()
     plt.imsave(arr=blue_channel, fname=blue_image_dir, cmap='gray', vmin=0, vmax=255)
+    plt.close(fig)
     plt.clf()
+    fig = plt.figure()
     plt.imsave(arr=green_channel, fname=green_image_dir, cmap='gray', vmin=0, vmax=255)
+    plt.close(fig)
     plt.clf()
+    fig = plt.figure()
     plt.imsave(arr=red_channel, fname=red_image_dir, cmap='gray', vmin=0, vmax=255)
+    plt.close(fig)
 
     return Response({'blue_image_dir': BASE_DIR + blue_image_dir,
                      'green_image_dir': BASE_DIR + green_image_dir,
@@ -196,6 +205,7 @@ def dilate_erode(request):
     # write channels to greyscale image
     plt.clf()
     plt.imsave(arr=result, fname=image_dir)
+    plt.close()
 
     return Response({'image_dir': BASE_DIR + image_dir})
 
@@ -246,6 +256,7 @@ def morpho_final(request):
     plt.clf()
     mask_dir = OUTPUT_IMAGE_DIR + 'mask' + name + '.png'
     plt.imsave(arr=mainMask, fname=mask_dir)
+    plt.close()
 
     return Response({'image_dir': BASE_DIR + image_dir,
                      'mask_dir': BASE_DIR + mask_dir})
