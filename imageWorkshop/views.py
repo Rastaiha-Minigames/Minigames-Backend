@@ -37,7 +37,6 @@ def threshold(request):
     print(im[0])
     im[im < tr] = 0
     im[im >= tr] = 255
-    print(im[0])
 
     t = str(datetime.now().strftime('%H:%M-%S'))
     name = t + ''.join(random.choice(string.ascii_letters) for i in range(8))
@@ -69,7 +68,12 @@ def filter_im(request):
         else:
             kernel = np.array(json.loads(request.data['kernel']))
         im = cv2.imread(file_dir)
-        filtered_im = cv2.filter2D(im, -1, kernel)
+
+        try:
+            filtered_im = cv2.filter2D(im, -1, kernel)
+        except:
+            return Response({'detail': 'لطفا همه‌ی مقادیر کرنل را عدد وارد کنید.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
     t = str(datetime.now().strftime('%H:%M-%S'))
 
