@@ -37,6 +37,8 @@ def fftView(request):
         duration = None
 
     file = INPUT_SOUNDS_DIR + request.data['sound_file']
+    if duration == 0:
+        duration = 0.001
     data, samplerate = librosa.load(file, offset=start, duration=duration, sr=None)
 
     N = len(data)
