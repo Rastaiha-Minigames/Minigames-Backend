@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.views.decorators.csrf import csrf_exempt
 
+KEY = 'zoorkhooneh'
+
 city_score = {
     "Rome":3000,
     "Milan":2000,
@@ -34,3 +36,36 @@ def choose(request):
     phone_answer[phone_number] = city
     
     return Response(data={'message':f'انتخاب شما ثبت شد و امتیاز شما برابر است با {city_score[city] / counter(city)}'})
+
+@api_view(['POST'])
+def reset_game(request):
+    recv_key = request.data['key']
+    if recv_key == KEY:
+        phone_answer.clear()
+        return Response(data={'message':'داده ها با موفقیت پاک شدند'})
+    
+    return Response(data={'message':'کد وارد کرده اشتباه است'})
+
+@api_view(['POST'])
+def result_game(request):
+    recv_key = request.data['key']
+    if recv_key == KEY:
+        scores = dict()
+        for c, s in city_score.items():
+            attends = counter(c)
+            if attends == 0:
+                scores[c] = 0
+            else:
+                scores[c] = s / attends
+
+        return Response(data=scores)
+
+    return Response(data={'message':'کد وارد کرده اشتباه است'})
+
+@api_view(['POST'])
+def people_answer(request):
+    recv_key = request.data['key']
+    if recv_key == KEY:
+        return Response(data=phone_answer)
+    
+    return Response(data={'message':'کد وارد کرده اشتباه است'})
