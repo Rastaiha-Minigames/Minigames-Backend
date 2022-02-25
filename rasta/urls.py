@@ -23,5 +23,6 @@ urlpatterns = [
 
     path('frequency/', include('frequencyWorkshop.urls')),
     path('image/', include('imageWorkshop.urls')),
-    path('',include('TeamData.urls'))
+    path('',include('TeamData.urls')),
+    path('city/', include('citygame.urls'))
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

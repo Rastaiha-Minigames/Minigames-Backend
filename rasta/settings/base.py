@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'TeamData.apps.TeamdataConfig',
     'frequencyWorkshop.apps.FrequencyworkshopConfig',
     'imageWorkshop.apps.ImageworkshopConfig',
+    'citygame.apps.CitygameConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
