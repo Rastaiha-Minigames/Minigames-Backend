@@ -32,6 +32,7 @@ ADD ["./TeamData", "./TeamData"]
 ADD ["./frequencyWorkshop", "./frequencyWorkshop"]
 ADD ["./imageWorkshop", "./imageWorkshop"]
 ADD ["./media", "./media"]
+ADD ["./citygame", "./citygame"]
 
 COPY ./manage.py ./manage.py
 
