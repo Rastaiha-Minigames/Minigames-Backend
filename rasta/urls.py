@@ -20,9 +20,9 @@ from django.conf import settings
 from django.urls.conf import include
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('frequency/', include('frequencyWorkshop.urls')),
     path('image/', include('imageWorkshop.urls')),
     path('',include('TeamData.urls')),
-    path('city/', include('citygame.urls'))
+    path('city/', include('citygame.urls')),
+    path('source_coding/', include('source_coding_image_split.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

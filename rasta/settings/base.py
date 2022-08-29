@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'frequencyWorkshop.apps.FrequencyworkshopConfig',
     'imageWorkshop.apps.ImageworkshopConfig',
     'citygame.apps.CitygameConfig',
+    'source_coding_image_split.apps.SourceCodingImageSplitConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
