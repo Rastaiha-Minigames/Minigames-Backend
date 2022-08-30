@@ -5,7 +5,7 @@ import numpy
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-image = cv2.imread('media/cat.jpg')
+image = cv2.imread('media/cat.jpeg/')
 
 def image_to_base64(image):
     _, buffer = cv2.imencode(".jpg", image)
@@ -15,6 +15,7 @@ def image_to_base64(image):
 
 @api_view(['POST'])
 def RGB_split(request):
+    # print(image)
     zeros = numpy.zeros(image.shape[:2], dtype="uint8")
     (B, G, R) = cv2.split(image)
     try:
