@@ -7,10 +7,21 @@ from rest_framework.response import Response
 
 image = cv2.imread('media/cat.jpg')
 
+
 def image_to_base64(image):
     _, buffer = cv2.imencode(".jpg", image)
     string = base64.b64encode(buffer).decode()
     return f"data:image/jpg;base64,{string}"
+
+
+def cut_bits(image, bits):
+    return ((image*((2**bits)/256)).astype('uint8')*256/2**bits).astype('uint8')
+
+def downsample(image, scale_factor):
+    original_dim = (image.shape[1], image.shape[0])
+    dim = (int(image.shape[1]*scale_factor), int(image.shape[0]*scale_factor))
+    image = cv2.resize(cv2.resize(image, dim, interpolation=cv2.INTER_LANCZOS4), original_dim)
+    return image
 
 @api_view(['POST'])
 def RGB_split(request):
@@ -64,15 +75,87 @@ def YCbCr_split(request):
 
 
 @api_view(['POST'])
-def downsample(request):
+def RGB_cutbits(request):
+    zeros = numpy.zeros(image.shape[:2], dtype="uint8")
+    (B, G, R) = cv2.split(image)
     try:
-        scale_factor = request.data['factor']
+        B = cut_bits(B, request.data['b'])
+        G = cut_bits(G, request.data['g'])
+        R = cut_bits(R, request.data['r'])
     except:
-        scale_factor = 1
-    original_dim = (image.shape[1], image.shape[0])
-    dim = (int(image.shape[1]*scale_factor), int(image.shape[0]*scale_factor))
-    resized = cv2.resize(image, dim, interpolation=cv2.INTER_LANCZOS4)
-    img = cv2.resize(resized, original_dim)
+        pass
+    merge = cv2.merge([(B).astype('uint8'),(G).astype('uint8'), (R).astype('uint8')])
+    B = cv2.merge([B, zeros, zeros])
+    G = cv2.merge([zeros, G, zeros])
+    R = cv2.merge([zeros, zeros, R])
     return Response({
-        'image': image_to_base64(img),
+        'B': image_to_base64(B),
+        'G': image_to_base64(G),
+        'R': image_to_base64(R),
+        'Merge': image_to_base64(merge),
+    })
+
+
+@api_view(['POST'])
+def YCbCr_cutbits(request):
+    (Y, Cr, Cb) = cv2.split(cv2.cvtColor(image, cv2.COLOR_BGR2YCR_CB))
+    half = numpy.array([[127]*Y.shape[1]]*Y.shape[0]).astype(Y.dtype)
+    try:
+        Y = cut_bits(Y,request.data['y'])
+        Cr = cut_bits(Cr,request.data['cr'])
+        Cb = cut_bits(Cb,request.data['cb'])
+    except:
+        pass
+    merge = cv2.cvtColor(cv2.merge([Y.astype(Y.dtype), Cr.astype(Y.dtype), Cb.astype(Y.dtype)]), cv2.COLOR_YCrCb2BGR)
+    Y = cv2.cvtColor(cv2.merge([Y, half, half]), cv2.COLOR_YCrCb2BGR)
+    Cr = cv2.cvtColor(cv2.merge([half, Cr, half]), cv2.COLOR_YCrCb2BGR)
+    Cb = cv2.cvtColor(cv2.merge([half, half, Cb]), cv2.COLOR_YCrCb2BGR)
+    return Response({
+        'Y': image_to_base64(Y),
+        'Cb': image_to_base64(Cb),
+        'Cr': image_to_base64(Cr),
+        'Merge': image_to_base64(merge),
+    })
+
+@api_view(['POST'])
+def RGB_downsample(request):
+    zeros = numpy.zeros(image.shape[:2], dtype="uint8")
+    (B, G, R) = cv2.split(image)
+    try:
+        B = downsample(B, request.data['b'])
+        G = downsample(G, request.data['g'])
+        R = downsample(R, request.data['r'])
+    except:
+        pass
+    merge = cv2.merge([B.astype('uint8'),G.astype('uint8'), R.astype('uint8')])
+    B = cv2.merge([B, zeros, zeros])
+    G = cv2.merge([zeros, G, zeros])
+    R = cv2.merge([zeros, zeros, R])
+    return Response({
+        'B': image_to_base64(B),
+        'G': image_to_base64(G),
+        'R': image_to_base64(R),
+        'Merge': image_to_base64(merge),
+    })
+
+
+@api_view(['POST'])
+def YCbCr_downsample(request):
+    (Y, Cr, Cb) = cv2.split(cv2.cvtColor(image, cv2.COLOR_BGR2YCR_CB))
+    half = numpy.array([[127]*Y.shape[1]]*Y.shape[0]).astype(Y.dtype)
+    try:
+        Y = downsample(Y,request.data['y'])
+        Cr = downsample(Cr,request.data['cr'])
+        Cb = downsample(Cb,request.data['cb'])
+    except:
+        pass
+    merge = cv2.cvtColor(cv2.merge([Y.astype(Y.dtype), Cr.astype(Y.dtype), Cb.astype(Y.dtype)]), cv2.COLOR_YCrCb2BGR)
+    Y = cv2.cvtColor(cv2.merge([Y, half, half]), cv2.COLOR_YCrCb2BGR)
+    Cr = cv2.cvtColor(cv2.merge([half, Cr, half]), cv2.COLOR_YCrCb2BGR)
+    Cb = cv2.cvtColor(cv2.merge([half, half, Cb]), cv2.COLOR_YCrCb2BGR)
+    return Response({
+        'Y': image_to_base64(Y),
+        'Cb': image_to_base64(Cb),
+        'Cr': image_to_base64(Cr),
+        'Merge': image_to_base64(merge),
     })
