@@ -34,7 +34,7 @@ def threshold(request):
     tr = int(request.data['threshold'])
 
     im = cv2.imread(file_dir, 0)
-    print(im[0])
+
     im[im < tr] = 0
     im[im >= tr] = 255
 
