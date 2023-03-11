@@ -19,7 +19,7 @@ from .utils import *
 INPUT_SOUNDS_DIR = 'media/frequencyWorkshop/input_sounds/'
 OUTPUT_SOUNDS_DIR = 'media/frequencyWorkshop/output_sounds/'
 FFT_DIR = 'media/frequencyWorkshop/FFT/'
-BASE_DIR = 'utility.rastaiha.ir/'
+BASE_DIR = 'backend.minigames.kamva.academy/'
 
 
 @transaction.atomic

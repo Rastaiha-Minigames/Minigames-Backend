@@ -19,7 +19,7 @@ import json
 
 INPUT_IMAGE_DIR = 'media/imageWorkshop/input_images/'
 OUTPUT_IMAGE_DIR = 'media/imageWorkshop/output_images/'
-BASE_DIR = 'utility.rastaiha.ir/'
+BASE_DIR = 'backend.minigames.kamva.academy/'
 
 # Create your views here.
 @transaction.atomic
