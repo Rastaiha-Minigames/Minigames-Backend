@@ -31,6 +31,7 @@ ADD ["./rasta", "./rasta"]
 ADD ["./TeamData", "./TeamData"]
 ADD ["./frequencyWorkshop", "./frequencyWorkshop"]
 ADD ["./imageWorkshop", "./imageWorkshop"]
+ADD ["./source_coding_image_split", "./source_coding_image_split"]
 ADD ["./media", "./media"]
 ADD ["./citygame", "./citygame"]
 
